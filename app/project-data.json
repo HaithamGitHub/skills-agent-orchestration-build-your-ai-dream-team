@@ -1,0 +1,44 @@
+{
+  "projects": [
+    {
+      "name": "Community Hub",
+      "owner": "Mona",
+      "status": "Active",
+      "recentActivity": "Welcomed 18 new community members and published the monthly roundup.",
+      "priority": "High",
+      "summary": "Making it easier for people to find their place, share ideas, and help one another."
+    },
+    {
+      "name": "Onboarding Refresh",
+      "owner": "Jordan Lee",
+      "status": "Active",
+      "recentActivity": "Finished the first-run checklist; gathering feedback from the next cohort.",
+      "priority": "Medium",
+      "summary": "A friendlier first week that helps every contributor find a confident starting point."
+    },
+    {
+      "name": "Greenlight Grants",
+      "owner": "Ari Patel",
+      "status": "Planning",
+      "recentActivity": "Shortlisted 12 proposals for the spring review round.",
+      "priority": "Medium",
+      "summary": "Helping promising community-led projects get the support they need to grow."
+    },
+    {
+      "name": "Open Docs",
+      "owner": "Sam Rivera",
+      "status": "At risk",
+      "recentActivity": "Core guide updates are ready; a second reviewer would help us stay on schedule.",
+      "priority": "High",
+      "summary": "Keeping the team's shared knowledge clear, current, and easy for everyone to use."
+    },
+    {
+      "name": "Spring Showcase",
+      "owner": "Taylor Kim",
+      "status": "Complete",
+      "recentActivity": "The showcase wrapped up Friday with 9 demos and a record turnout.",
+      "priority": "Low",
+      "summary": "Celebrating the people and practical ideas making a difference across the team."
+    }
+  ]
+}

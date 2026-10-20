@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f7f7f2">
+    <meta name="description" content="A clear, contributor-friendly snapshot of Mona's team projects.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="page-header">
+        <a class="brand" href="#main-content" aria-label="Project Pulse home">
+          <span class="brand-mark" aria-hidden="true">P</span>
+          <span>Project <strong>Pulse</strong></span>
+        </a>
+        <p class="header-note"><span class="live-dot" aria-hidden="true"></span> Team overview</p>
+      </header>
+
+      <section class="intro" id="main-content" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <p class="eyebrow">MONA'S TEAM · PROJECT DIRECTORY</p>
+          <h1 id="page-title">Good work, <span>in view.</span></h1>
+          <p class="intro-description">A shared snapshot of what the team is building, who’s moving it forward, and where a helping hand could make a difference.</p>
+        </div>
+        <div class="updated-pill"><span class="updated-icon" aria-hidden="true">↻</span> A little more clarity, every day</div>
+      </section>
+
+      <section class="overview" aria-label="Project overview">
+        <article class="overview-card overview-total">
+          <span class="overview-label">PROJECTS</span>
+          <strong class="overview-value" id="total-count">—</strong>
+          <span class="overview-caption">Across the team</span>
+        </article>
+        <article class="overview-card overview-active">
+          <span class="overview-label">IN MOTION</span>
+          <strong class="overview-value" id="active-count">—</strong>
+          <span class="overview-caption">Active projects</span>
+        </article>
+        <article class="overview-card overview-focus">
+          <span class="overview-label">NEEDS A LOOK</span>
+          <strong class="overview-value" id="priority-count">—</strong>
+          <span class="overview-caption">High-priority work</span>
+        </article>
+        <aside class="team-note">
+          <span class="note-sparkle" aria-hidden="true">✳</span>
+          <p><strong>Better together.</strong><br>Pick up a thread, share context, or ask an owner how you can help.</p>
+        </aside>
+      </section>
+
+      <section class="projects-section" aria-labelledby="projects-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">THE WORK, AT A GLANCE</p>
+            <h2 id="projects-title">Team projects <span class="heading-count" id="visible-count" aria-live="polite"></span></h2>
+          </div>
+          <label class="search-field">
+            <span class="sr-only">Search projects</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.8" cy="8.8" r="5.7"></circle><path d="m13 13 4 4"></path></svg>
+            <input id="project-search" type="search" placeholder="Find a project…" autocomplete="off">
+          </label>
+        </div>
+
+        <div class="filter-row">
+          <p class="list-hint">A little context goes a long way.</p>
+          <label class="filter-select">
+            <span class="sr-only">Filter projects by status</span>
+            <select id="status-filter">
+              <option value="all">All statuses</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="project-list" class="project-grid" aria-live="polite" aria-busy="true">
+          <p class="state-message">Gathering the latest project details…</p>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <span class="footer-mark" aria-hidden="true">P</span>
+        <p>Made for people who make things happen.</p>
+        <a href="#page-title">Back to top <span aria-hidden="true">↑</span></a>
+      </footer>
+    </main>
+    <script>
+      const projectList = document.querySelector("#project-list");
+      const searchInput = document.querySelector("#project-search");
+      const statusFilter = document.querySelector("#status-filter");
+      const visibleCount = document.querySelector("#visible-count");
+
+      const fieldText = (value, fallback = "Not provided") => {
+        if (typeof value === "string" && value.trim()) return value.trim();
+        if (typeof value === "number" && Number.isFinite(value)) return String(value);
+        return fallback;
+      };
+
+      const normalizedKey = (value) => fieldText(value, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+      function createElement(tagName, className, text) {
+        const element = document.createElement(tagName);
+        if (className) element.className = className;
+        if (text !== undefined) element.textContent = text;
+        return element;
+      }
+
+      function setState(message, kind = "") {
+        projectList.replaceChildren();
+        const state = createElement("div", `state-panel${kind ? ` state-${kind}` : ""}`);
+        const symbol = createElement("span", "state-symbol", kind === "error" ? "!" : kind === "empty" ? "✳" : "…");
+        symbol.setAttribute("aria-hidden", "true");
+        const copy = createElement("p", "state-message", message);
+        state.append(symbol, copy);
+        projectList.append(state);
+        projectList.setAttribute("aria-busy", "false");
+      }
+
+      function createProjectCard(project) {
+        const name = fieldText(project.name, "Untitled project");
+        const owner = fieldText(project.owner);
+        const status = fieldText(project.status);
+        const activity = fieldText(project.recentActivity);
+        const priority = fieldText(project.priority);
+        const summary = fieldText(project.summary, "A team effort in progress.");
+        const card = createElement("article", "project-card");
+
+        const topLine = createElement("div", "card-topline");
+        const category = createElement("span", "card-category", "TEAM PROJECT");
+        const statusBadge = createElement("span", `status-badge status-${normalizedKey(status) || "other"}`, status);
+        statusBadge.setAttribute("aria-label", `Status: ${status}`);
+        topLine.append(category, statusBadge);
+
+        const title = createElement("h3", "project-name", name);
+        const description = createElement("p", "project-summary", summary);
+
+        const ownerRow = createElement("div", "owner-row");
+        const avatar = createElement("span", "owner-avatar", owner.slice(0, 1).toUpperCase() || "?");
+        avatar.setAttribute("aria-hidden", "true");
+        const ownerDetails = createElement("span", "owner-details");
+        ownerDetails.append(
+          createElement("span", "detail-label", "PROJECT OWNER"),
+          createElement("span", "owner-name", owner),
+        );
+        ownerRow.append(avatar, ownerDetails);
+
+        const activityBlock = createElement("div", "activity-block");
+        activityBlock.append(
+          createElement("span", "detail-label", "RECENT ACTIVITY"),
+          createElement("p", "activity-copy", activity),
+        );
+
+        const footer = createElement("div", "card-footer");
+        footer.append(
+          createElement("span", "priority-label", "Priority"),
+          createElement("span", `priority-badge priority-${normalizedKey(priority) || "other"}`, priority),
+        );
+
+        card.append(topLine, title, description, ownerRow, activityBlock, footer);
+        return card;
+      }
+
+      function renderProjects(projects) {
+        const query = searchInput.value.trim().toLowerCase();
+        const selectedStatus = statusFilter.value;
+        const filteredProjects = projects.filter((project) => {
+          const status = fieldText(project.status, "").toLowerCase();
+          const searchable = [
+            project.name, project.owner, project.status, project.recentActivity, project.priority, project.summary,
+          ].map((value) => fieldText(value, "")).join(" ").toLowerCase();
+          return (selectedStatus === "all" || status === selectedStatus) && searchable.includes(query);
+        });
+
+        visibleCount.textContent = `(${filteredProjects.length})`;
+        if (!filteredProjects.length) {
+          setState(query || selectedStatus !== "all"
+            ? "No projects match those filters. Try a different search or status."
+            : "There are no projects to show just yet. Add a project to project-data.json to get started.", "empty");
+          return;
+        }
+
+        projectList.replaceChildren(...filteredProjects.map(createProjectCard));
+        projectList.setAttribute("aria-busy", "false");
+      }
+
+      async function loadProjects() {
+        try {
+          const response = await fetch("project-data.json");
+          if (!response.ok) throw new Error(`Project data request failed (${response.status}).`);
+          const data = await response.json();
+          if (!data || !Array.isArray(data.projects)) {
+            throw new Error("Project data must contain a top-level projects array.");
+          }
+
+          const projects = data.projects.filter((project) => project && typeof project === "object" && !Array.isArray(project));
+          document.querySelector("#total-count").textContent = String(projects.length);
+          document.querySelector("#active-count").textContent = String(projects.filter((project) => fieldText(project.status, "").toLowerCase() === "active").length);
+          document.querySelector("#priority-count").textContent = String(projects.filter((project) => ["high", "urgent", "critical"].includes(fieldText(project.priority, "").toLowerCase())).length);
+
+          const statuses = [...new Set(projects.map((project) => fieldText(project.status, "")).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+          for (const status of statuses) {
+            const option = createElement("option", "", status);
+            option.value = status.toLowerCase();
+            statusFilter.append(option);
+          }
+
+          renderProjects(projects);
+          searchInput.addEventListener("input", () => renderProjects(projects));
+          statusFilter.addEventListener("change", () => renderProjects(projects));
+        } catch (error) {
+          console.error("Unable to load Project Pulse data:", error);
+          visibleCount.textContent = "";
+          setState("We couldn’t load the project list. Check that project-data.json is available and valid, then refresh the page.", "error");
+        }
+      }
+
+      loadProjects();
+    </script>
+  </body>
+</html>
